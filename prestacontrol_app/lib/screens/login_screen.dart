@@ -45,11 +45,31 @@ class _LoginScreenState extends State<LoginScreen> {
         await _offerRegistration(e.message);
         return;
       }
+      if (e is ApiException && e.statusCode == 401) {
+        _showCredentialsError();
+        return;
+      }
       final msg = e is ApiException ? e.message : 'No se pudo iniciar sesión. Verifica tu conexión.';
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  void _showCredentialsError() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Correo o contraseña incorrectos. Si aún no tienes cuenta, regístrate.'),
+        duration: const Duration(seconds: 6),
+        action: SnackBarAction(label: 'Registrarme', onPressed: _goToRegister),
+      ),
+    );
+  }
+
+  void _goToRegister() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => RegisterScreen(initialEmail: _emailCtrl.text.trim())),
+    );
   }
 
   Future<void> _offerRegistration(String message) async {
