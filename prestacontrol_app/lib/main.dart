@@ -35,7 +35,7 @@ class PrestaControlApp extends StatelessWidget {
           filled: true,
           fillColor: Colors.white,
         ),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           color: Colors.white,

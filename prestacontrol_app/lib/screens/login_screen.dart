@@ -41,10 +41,34 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } catch (e) {
       if (!mounted) return;
+      if (e is ApiException && e.statusCode == 404) {
+        await _offerRegistration(e.message);
+        return;
+      }
       final msg = e is ApiException ? e.message : 'No se pudo iniciar sesión. Verifica tu conexión.';
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } finally {
       if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _offerRegistration(String message) async {
+    final goRegister = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(Icons.person_add_alt_1_outlined),
+        title: const Text('Correo no registrado'),
+        content: Text('$message\n\n¿Deseas crear una cuenta con "${_emailCtrl.text.trim()}"?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Registrarme')),
+        ],
+      ),
+    );
+    if (goRegister == true && mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => RegisterScreen(initialEmail: _emailCtrl.text.trim())),
+      );
     }
   }
 

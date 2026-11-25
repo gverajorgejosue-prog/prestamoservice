@@ -46,11 +46,14 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
+                        "El correo no está registrado. Crea una cuenta para continuar."));
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas"));
+
         UserDetails userDetails = new User(usuario.getEmail(), usuario.getPassword(), List.of());
         String token = jwtService.generateToken(userDetails);
         return new AuthResponse(token, usuario.getEmail(), usuario.getNombre());

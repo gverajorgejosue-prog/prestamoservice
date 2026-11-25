@@ -6,7 +6,8 @@ import '../services/storage_service.dart';
 import 'home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final String? initialEmail;
+  const RegisterScreen({super.key, this.initialEmail});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -22,6 +23,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late final AuthService _auth = AuthService(ApiClient(_storage), _storage);
   bool _loading = false;
   bool _obscure = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialEmail != null && widget.initialEmail!.isNotEmpty) {
+      _emailCtrl.text = widget.initialEmail!;
+    }
+  }
 
   @override
   void dispose() {
